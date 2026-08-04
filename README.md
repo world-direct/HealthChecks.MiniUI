@@ -9,6 +9,14 @@ HealthChecks.MiniUI is a tiny ASP.NET Core health page helper that renders a hum
 - Shows status, description, duration, tags, and exception details
 - Uses the existing Microsoft health check pipeline
 
+## Installation
+
+Install the package from NuGet:
+
+```bash
+dotnet add package WorldDirect.HealthChecks.MiniUI
+```
+
 ## Basic usage
 
 Map the page in your app startup code:

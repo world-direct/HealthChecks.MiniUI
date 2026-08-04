@@ -13,23 +13,23 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v5
               with:
                   fetch-depth: 0
 
             - name: Setup .NET
-              uses: actions/setup-dotnet@v4
+              uses: actions/setup-dotnet@v5
               with:
                   dotnet-version: 10.0.x
 
             - name: Setup GitVersion
-              uses: gittools/actions/gitversion/setup@v3
+              uses: gittools/actions/gitversion/setup@v4
               with:
                   versionSpec: "6.x"
 
             - name: Determine Version
               id: gitversion
-              uses: gittools/actions/gitversion/execute@v3
+              uses: gittools/actions/gitversion/execute@v4
 
             - name: Resolve package version
               id: pkgver
@@ -63,7 +63,7 @@ jobs:
                   /p:PackageVersion=${{ steps.pkgver.outputs.value }}
 
             - name: Upload package artifact
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v5
               with:
                   name: nuget-package
                   path: artifacts/*.nupkg

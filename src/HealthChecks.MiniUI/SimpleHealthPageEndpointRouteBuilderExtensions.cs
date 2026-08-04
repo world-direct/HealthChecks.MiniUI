@@ -6,8 +6,18 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace HealthChecks.MiniUI;
 
+/// <summary>
+/// Extension methods for mapping the simple health page endpoint.
+/// </summary>
 public static class SimpleHealthPageEndpointRouteBuilderExtensions
 {
+    /// <summary>
+    /// Maps a human-readable health page endpoint at the given route pattern.
+    /// </summary>
+    /// <param name="endpoints">The endpoint route builder used to map the endpoint.</param>
+    /// <param name="pattern">The route pattern where the health page should be exposed, for example <c>/health</c>.</param>
+    /// <param name="configure">Optional per-endpoint options configuration.</param>
+    /// <returns>The endpoint convention builder for further endpoint configuration.</returns>
     public static IEndpointConventionBuilder MapSimpleHealthPage(
         this IEndpointRouteBuilder endpoints,
         string pattern,

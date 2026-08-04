@@ -1,0 +1,56 @@
+name: Build, Test, and Pack
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+    workflow_dispatch:
+
+jobs:
+    build-test-pack:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Setup .NET
+              uses: actions/setup-dotnet@v4
+              with:
+                  dotnet-version: 10.0.x
+
+            - name: Setup GitVersion
+              uses: gittools/actions/gitversion/setup@v3
+              with:
+                  versionSpec: "6.x"
+
+            - name: Determine Version
+              id: gitversion
+              uses: gittools/actions/gitversion/execute@v3
+
+            - name: Restore
+              run: dotnet restore HealthChecks.MiniUI.sln
+
+            - name: Build
+              run: dotnet build HealthChecks.MiniUI.sln -c Release --no-restore /p:ContinuousIntegrationBuild=true
+
+            - name: Test
+              run: dotnet test tests/HealthChecks.MiniUI.Tests/HealthChecks.MiniUI.Tests.csproj -c Release --no-build
+
+            - name: Pack NuGet
+              run: >-
+                  dotnet pack src/HealthChecks.MiniUI/HealthChecks.MiniUI.csproj
+                  -c Release
+                  --no-build
+                  -o artifacts
+                  /p:Version=${{ steps.gitversion.outputs.SemVer }}
+                  /p:PackageVersion=${{ steps.gitversion.outputs.NuGetVersionV2 }}
+
+            - name: Upload package artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: nuget-package
+                  path: artifacts/*.nupkg

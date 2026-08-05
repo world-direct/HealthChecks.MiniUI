@@ -26,7 +26,42 @@ Map the page in your app startup code:
 app.MapHealthChecks("/healthz");
 
 // MiniUI HealthCheck page
-app.MapSimpleHealthPage("/health", options =>
+app.MapSimpleHealthPage("/health-ui", options =>
+{
+    options.Title = "My App Health";
+});
+```
+
+## Example for dynamic response
+
+If you want one entry URL, you can dispatch based on the Accept header:
+Browsers typically include `text/html` on page navigation, so interactive users will see the UI automatically.
+
+- `/health` with `Accept: text/html` -> MiniUI endpoint (`/health-ui`)
+- `/health` with other Accept values -> machine endpoint (`/healthz`)
+
+```csharp
+// Custom Middleware for Accept header based routing
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path == "/health")
+    {
+        var accept = context.Request.Headers.Accept.ToString();
+        var wantsHtml = accept.Contains("text/html", StringComparison.OrdinalIgnoreCase);
+
+        // Internal server-side rewrite for this request (no 3xx redirect to the client).
+        context.Request.Path = wantsHtml ? "/health-ui" : "/healthz";
+    }
+
+    await next();
+});
+
+// Required in this setup so endpoint routing sees the rewritten /health path.
+app.UseRouting();
+
+app.MapHealthChecks("/healthz");
+
+app.MapSimpleHealthPage("/health-ui", options =>
 {
     options.Title = "My App Health";
 });
@@ -44,8 +79,9 @@ dotnet run --project demo/HealthChecks.MiniUI.Demo/HealthChecks.MiniUI.Demo.cspr
 
 Then open:
 
-- `/health` for the HTML UI
-- `/healthz` for the machine endpoint
+- `/health` as the dynamic entry URL (UI for browser requests, machine response for non-HTML Accept headers)
+- `/health-ui` for the UI endpoint directly
+- `/healthz` for the machine endpoint directly
 
 ## Notes
 

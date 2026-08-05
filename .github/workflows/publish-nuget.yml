@@ -67,6 +67,7 @@ jobs:
           -o artifacts
           /p:Version=${{ steps.pkgver.outputs.value }}
           /p:PackageVersion=${{ steps.pkgver.outputs.value }}
+          /p:PackageOwner="WorldDirect"
 
       - name: Upload package artifact
         uses: actions/upload-artifact@v7
@@ -101,19 +102,7 @@ jobs:
         with:
           user: ${{ vars.NUGET_TRUSTED_PUBLISHER_USER }}
 
-      - name: Debug context info
-        run: echo "runner.debug='${{ runner.debug }}'"
-
-      - name: Push to NuGet.org (Trusted Publishing, detailed)
-        if: ${{ runner.debug == '1' }}
-        run: |
-          dotnet nuget push "artifacts/*.nupkg" \
-            --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}" \
-            --source "https://api.nuget.org/v3/index.json" \
-            -v detailed
-
       - name: Push to NuGet.org (Trusted Publishing)
-        if: ${{ runner.debug != '1' }}
         run: |
           dotnet nuget push "artifacts/*.nupkg" \
             --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}" \

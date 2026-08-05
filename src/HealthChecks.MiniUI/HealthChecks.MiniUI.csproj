@@ -7,8 +7,14 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <WarningsAsErrors>$(WarningsAsErrors);CS1591</WarningsAsErrors>
     <PackageId>WorldDirect.HealthChecks.MiniUI</PackageId>
+    <Authors>WorldDirect</Authors>
+    <Company>WorldDirect</Company>
     <Description>Tiny human-readable health page for ASP.NET Core health checks.</Description>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageTags>healthchecks;aspnetcore;observability;status-page</PackageTags>
+    <PackageProjectUrl>https://github.com/world-direct/HealthChecks.MiniUI</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/world-direct/HealthChecks.MiniUI</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 

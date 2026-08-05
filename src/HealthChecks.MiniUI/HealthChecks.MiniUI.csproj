@@ -11,6 +11,7 @@
     <Company>WorldDirect</Company>
     <Description>Tiny human-readable health page for ASP.NET Core health checks.</Description>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageIcon>icon.png</PackageIcon>
     <PackageTags>healthchecks;aspnetcore;observability;status-page</PackageTags>
     <PackageProjectUrl>https://github.com/world-direct/HealthChecks.MiniUI</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -24,6 +25,7 @@
 
   <ItemGroup>
     <None Include="..\..\README.md" Pack="true" PackagePath="\" Link="README.md" />
+    <None Include="..\..\assets\icon.png" Pack="true" PackagePath="\" Link="icon.png" />
   </ItemGroup>
 
 </Project>

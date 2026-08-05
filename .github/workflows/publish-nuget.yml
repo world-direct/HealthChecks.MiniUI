@@ -72,11 +72,15 @@ jobs:
           path: artifacts/*.nupkg
           if-no-files-found: warn
 
+      # NuGet trusted publishing still requires a username hint for policy lookup.
+      # This value must be the NuGet username of the account that created the
+      # trusted publishing policy (not necessarily the policy owner org name).
+      # Authentication itself is done by GitHub OIDC token validation.
       - name: NuGet login (OIDC)
         id: nuget-login
         uses: NuGet/login@v1
         with:
-          user: ${{ github.repository_owner }}
+          user: ${{ vars.NUGET_TRUSTED_PUBLISHER_USER }}
 
       - name: Push to NuGet.org (Trusted Publishing)
         run: dotnet nuget push "artifacts/*.nupkg" --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}" --source "https://api.nuget.org/v3/index.json" --skip-duplicate

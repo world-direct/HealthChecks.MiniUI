@@ -45,7 +45,7 @@ internal sealed class SimpleHealthPageHtmlRenderer
             .Append(".meta{color:#59636e;font-size:.9rem;margin:.5rem 0}")
             .Append("code{background:#f6f8fa;padding:.1rem .3rem;border-radius:4px}")
             .Append(".exception{display:block;white-space:pre-wrap;word-break:break-word}")
-            .Append(".exception-link{color:#0969da;text-decoration:none;font-weight:600}")
+            .Append(".exception-link{color:#0969da;text-decoration:underline;display:inline-block;max-width:16rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:bottom}")
             .Append(".exception-link:hover{text-decoration:underline}")
             .Append(".tags{display:flex;flex-wrap:wrap;gap:.3rem}")
             .Append(".tag{display:inline-block;padding:.15rem .45rem;border-radius:999px;background:#ddf4ff;color:#0969da;font-size:.8rem;font-weight:600;line-height:1.2}")
@@ -53,7 +53,7 @@ internal sealed class SimpleHealthPageHtmlRenderer
             .Append(".overlay:target{display:flex}")
             .Append(".overlay-card{max-width:900px;width:100%;max-height:90vh;overflow:auto;background:#fff;border:1px solid #d1d9e0;border-radius:8px;padding:1rem}")
             .Append(".overlay-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}")
-            .Append(".overlay-close{color:#0969da;text-decoration:none;font-weight:600}")
+            .Append(".overlay-close{color:#0969da;text-decoration:underline}")
             .Append(".overlay-close:hover{text-decoration:underline}")
             .Append(".exception-full{display:block;padding:.6rem;line-height:1.4}")
             .Append("</style></head><body><main><h1>")
@@ -113,14 +113,12 @@ internal sealed class SimpleHealthPageHtmlRenderer
             else
             {
                 var overlayId = $"ex-overlay-{overlayIndex++}";
-                var exceptionMessage = string.IsNullOrWhiteSpace(entry.Value.Exception.Message)
-                    ? entry.Value.Exception.GetType().Name
-                    : entry.Value.Exception.Message;
+                var exceptionTypeName = entry.Value.Exception.GetType().Name;
 
                 builder.Append("<a class=\"exception-link\" href=\"#")
                     .Append(_encoder.Encode(overlayId))
                     .Append("\">")
-                    .Append(_encoder.Encode(exceptionMessage))
+                    .Append(_encoder.Encode(exceptionTypeName))
                     .Append("</a>");
 
                 overlays.Append("<div id=\"")

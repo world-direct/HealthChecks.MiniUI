@@ -11,28 +11,10 @@ HealthChecks.MiniUI is a tiny ASP.NET Core health page helper that renders a hum
 
 ## Installation
 
-Install the package from NuGet (currently not working due policy):
+Install the package from NuGet:
 
 ```bash
 dotnet add package WorldDirect.HealthChecks.MiniUI
-```
-
-If you want to consume the package from GitHub Packages instead, register the feed first:
-
-GitHub Packages may still require authentication for NuGet client access, even when the package is public.
-
-```bash
-dotnet nuget add source https://nuget.pkg.github.com/world-direct/index.json \
-    --name github-world-direct \
-    --username YOUR_GITHUB_USERNAME \
-    --password YOUR_GITHUB_TOKEN \
-    --store-password-in-clear-text
-```
-
-Then install the package from that source:
-
-```bash
-dotnet add package WorldDirect.HealthChecks.MiniUI --source github-world-direct
 ```
 
 ## Basic usage

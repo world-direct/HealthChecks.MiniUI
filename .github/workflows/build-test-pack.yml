@@ -1,69 +1,30 @@
-name: Build, Test, and Pack
+name: Build and Test
 
 on:
-    push:
-        branches:
-            - main
-    pull_request:
-    workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
 
 jobs:
-    build-test-pack:
-        runs-on: ubuntu-latest
+  build-test:
+    runs-on: ubuntu-latest
 
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v5
-              with:
-                  fetch-depth: 0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
 
-            - name: Setup .NET
-              uses: actions/setup-dotnet@v5
-              with:
-                  dotnet-version: 10.0.x
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
 
-            - name: Setup GitVersion
-              uses: gittools/actions/gitversion/setup@v4
-              with:
-                  versionSpec: "6.x"
+      - name: Restore
+        run: dotnet restore HealthChecks.MiniUI.sln
 
-            - name: Determine Version
-              id: gitversion
-              uses: gittools/actions/gitversion/execute@v4
+      - name: Build
+        run: dotnet build HealthChecks.MiniUI.sln -c Release --no-restore /p:ContinuousIntegrationBuild=true
 
-            - name: Resolve package version
-              id: pkgver
-              shell: bash
-              run: |
-                  VERSION="${{ steps.gitversion.outputs.SemVer }}"
-                  if [ -z "$VERSION" ]; then VERSION="${{ steps.gitversion.outputs.semVer }}"; fi
-                  if [ -z "$VERSION" ]; then
-                    echo "Could not resolve GitVersion SemVer output." >&2
-                    exit 1
-                  fi
-                  echo "Resolved package version: $VERSION"
-                  echo "value=$VERSION" >> "$GITHUB_OUTPUT"
-
-            - name: Restore
-              run: dotnet restore HealthChecks.MiniUI.sln
-
-            - name: Build
-              run: dotnet build HealthChecks.MiniUI.sln -c Release --no-restore /p:ContinuousIntegrationBuild=true
-
-            - name: Test
-              run: dotnet test tests/HealthChecks.MiniUI.Tests/HealthChecks.MiniUI.Tests.csproj -c Release --no-build
-
-            - name: Pack NuGet
-              run: >-
-                  dotnet pack src/HealthChecks.MiniUI/HealthChecks.MiniUI.csproj
-                  -c Release
-                  --no-build
-                  -o artifacts
-                  /p:Version=${{ steps.pkgver.outputs.value }}
-                  /p:PackageVersion=${{ steps.pkgver.outputs.value }}
-
-            - name: Upload package artifact
-              uses: actions/upload-artifact@v7
-              with:
-                  name: nuget-package
-                  path: artifacts/*.nupkg
+      - name: Test
+        run: dotnet test tests/HealthChecks.MiniUI.Tests/HealthChecks.MiniUI.Tests.csproj -c Release --no-build

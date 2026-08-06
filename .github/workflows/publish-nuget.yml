@@ -11,8 +11,11 @@ permissions:
   id-token: write
 
 jobs:
-  publish:
+  build:
     runs-on: ubuntu-latest
+
+    outputs:
+      package_version: ${{ steps.pkgver.outputs.value }}
 
     steps:
       - name: Checkout
@@ -64,13 +67,30 @@ jobs:
           -o artifacts
           /p:Version=${{ steps.pkgver.outputs.value }}
           /p:PackageVersion=${{ steps.pkgver.outputs.value }}
+          /p:PackageOwner="WorldDirect"
 
       - name: Upload package artifact
         uses: actions/upload-artifact@v7
         with:
-          name: nuget-package-${{ steps.pkgver.outputs.value }}
+          name: nuget-package
           path: artifacts/*.nupkg
           if-no-files-found: warn
+
+  publish-nuget:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Download package artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: nuget-package
+          path: artifacts
 
       # NuGet trusted publishing still requires a username hint for policy lookup.
       # This value must be the NuGet username of the account that created the
@@ -83,4 +103,7 @@ jobs:
           user: ${{ vars.NUGET_TRUSTED_PUBLISHER_USER }}
 
       - name: Push to NuGet.org (Trusted Publishing)
-        run: dotnet nuget push "artifacts/*.nupkg" --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}" --source "https://api.nuget.org/v3/index.json" --skip-duplicate
+        run: |
+          dotnet nuget push "artifacts/*.nupkg" \
+            --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}" \
+            --source "https://api.nuget.org/v3/index.json"

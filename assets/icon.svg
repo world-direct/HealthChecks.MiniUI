@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="HealthChecks MiniUI icon">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f766e"/>
+      <stop offset="100%" stop-color="#0891b2"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="6" y="6" width="116" height="116" rx="24" fill="url(#bg)"/>
+
+  <rect x="22" y="30" width="84" height="68" rx="12" fill="#ffffff" opacity="0.95"/>
+
+  <circle cx="38" cy="52" r="6" fill="#16a34a"/>
+  <circle cx="38" cy="68" r="6" fill="#f59e0b"/>
+  <circle cx="38" cy="84" r="6" fill="#dc2626"/>
+
+  <rect x="50" y="47" width="42" height="10" rx="5" fill="#0f172a" opacity="0.85"/>
+  <rect x="50" y="63" width="34" height="10" rx="5" fill="#0f172a" opacity="0.7"/>
+  <rect x="50" y="79" width="26" height="10" rx="5" fill="#0f172a" opacity="0.55"/>
+
+  <path d="M95 20 L102 27 L95 34" stroke="#e2e8f0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>

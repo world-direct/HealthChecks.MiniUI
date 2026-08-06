@@ -1,4 +1,5 @@
 ﻿using HealthChecks.MiniUI;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace HealthChecks.MiniUI.Tests;
@@ -12,6 +13,29 @@ public sealed class SimpleHealthPageTests
 
         Assert.Equal("Health Checks", options.Title);
         Assert.Null(options.AuthorizationPolicy);
+        Assert.Equal(StatusCodes.Status200OK, options.StatusCodes.Healthy);
+        Assert.Equal(StatusCodes.Status200OK, options.StatusCodes.Degraded);
+        Assert.Equal(StatusCodes.Status200OK, options.StatusCodes.Unhealthy);
+    }
+
+    [Fact]
+    public void StatusCodeResolution_UsesConfiguredPerStatusValues()
+    {
+        var statusCodes = new SimpleHealthPageStatusCodesOptions
+        {
+            Healthy = StatusCodes.Status200OK,
+            Degraded = StatusCodes.Status429TooManyRequests,
+            Unhealthy = StatusCodes.Status503ServiceUnavailable
+        };
+
+        Assert.Equal(StatusCodes.Status200OK,
+            SimpleHealthPageEndpointRouteBuilderExtensions.ResolveStatusCode(HealthStatus.Healthy, statusCodes));
+
+        Assert.Equal(StatusCodes.Status429TooManyRequests,
+            SimpleHealthPageEndpointRouteBuilderExtensions.ResolveStatusCode(HealthStatus.Degraded, statusCodes));
+
+        Assert.Equal(StatusCodes.Status503ServiceUnavailable,
+            SimpleHealthPageEndpointRouteBuilderExtensions.ResolveStatusCode(HealthStatus.Unhealthy, statusCodes));
     }
 
     [Fact]

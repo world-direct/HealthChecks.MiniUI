@@ -38,6 +38,23 @@ app.MapSimpleHealthPage("/health-ui", options =>
 });
 ```
 
+## Response status codes
+
+By default, the page returns HTTP `200` for all overall health states (`Healthy`, `Degraded`, `Unhealthy`).
+
+You can override this per status:
+
+```csharp
+using Microsoft.AspNetCore.Http;
+
+app.MapSimpleHealthPage("/health-ui", options =>
+{
+    options.StatusCodes.Healthy = StatusCodes.Status200OK;
+    options.StatusCodes.Degraded = StatusCodes.Status200OK;
+    options.StatusCodes.Unhealthy = StatusCodes.Status503ServiceUnavailable;
+});
+```
+
 ## Example for dynamic response
 
 If you want a single entry URL, you can dispatch based on the Accept header:

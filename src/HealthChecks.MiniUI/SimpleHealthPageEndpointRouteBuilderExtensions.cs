@@ -43,6 +43,7 @@ public static class SimpleHealthPageEndpointRouteBuilderExtensions
 
             var html = renderer.Render();
 
+            context.Response.StatusCode = ResolveStatusCode(report.Status, options.StatusCodes);
             context.Response.ContentType = "text/html; charset=utf-8";
             await context.Response.WriteAsync(html, context.RequestAborted);
         });
@@ -53,5 +54,18 @@ public static class SimpleHealthPageEndpointRouteBuilderExtensions
         }
 
         return endpoint;
+    }
+
+    internal static int ResolveStatusCode(HealthStatus status, SimpleHealthPageStatusCodesOptions statusCodes)
+    {
+        ArgumentNullException.ThrowIfNull(statusCodes);
+
+        return status switch
+        {
+            HealthStatus.Healthy => statusCodes.Healthy,
+            HealthStatus.Degraded => statusCodes.Degraded,
+            HealthStatus.Unhealthy => statusCodes.Unhealthy,
+            _ => statusCodes.Unhealthy
+        };
     }
 }

@@ -133,6 +133,7 @@ internal sealed class SimpleHealthPageHtmlRenderer
 
         builder.Append("</tbody></table></main>")
             .Append(overlays)
+            .Append("<script>(function(){function closeOverlay(){if(location.hash&&location.hash.indexOf('#ex-overlay-')===0){var sx=window.scrollX;var sy=window.scrollY;location.hash='';window.scrollTo(sx,sy);if(history.replaceState){history.replaceState(null,'',location.pathname+location.search);}}}document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeOverlay();}});document.addEventListener('click',function(e){if(e.target&&e.target.classList&&e.target.classList.contains('overlay')){closeOverlay();}});})();</script>")
             .Append("</body></html>");
         return builder.ToString();
     }

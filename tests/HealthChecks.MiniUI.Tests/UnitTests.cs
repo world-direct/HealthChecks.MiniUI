@@ -42,7 +42,11 @@ public sealed class SimpleHealthPageTests
 
         var html = renderer.Render();
 
-        Assert.DoesNotContain("<script>", html, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("title<script>", html, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("db<script>", html, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("desc<script>", html, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("ready<script>", html, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("boom<script>", html, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("title&lt;script&gt;", html, StringComparison.Ordinal);
         Assert.Contains("db&lt;script&gt;", html, StringComparison.Ordinal);
         Assert.Contains("desc&lt;script&gt;", html, StringComparison.Ordinal);
@@ -53,6 +57,7 @@ public sealed class SimpleHealthPageTests
         Assert.Contains("class=\"exception-link\"", html, StringComparison.Ordinal);
         Assert.Contains("class=\"overlay\"", html, StringComparison.Ordinal);
         Assert.Contains("Exception details", html, StringComparison.Ordinal);
+        Assert.Contains("id=\"theme-select\"", html, StringComparison.Ordinal);
         Assert.DoesNotContain(">Data</th>", html, StringComparison.Ordinal);
     }
 }

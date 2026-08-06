@@ -11,9 +11,11 @@ HealthChecks.MiniUI is a tiny ASP.NET Core health page helper that renders a hum
 
 ## How it looks
 
-This is a screenshot of the demo app, including the Exception details pop-out:
+These screenshots are taken from the demo application.
 
-![HealthChecks MiniUI screenshot](assets/screen-ex.png)
+| Dark mode | Light mode | Exception pop-out |
+| --- | --- | --- |
+| ![Dark mode](assets/screen-dark.png) | ![Light mode](assets/screen-light.png) | ![Exception pop-out](assets/screen-ex.png) |
 
 ## Installation
 

@@ -26,6 +26,7 @@
   <ItemGroup>
     <None Include="..\..\README.md" Pack="true" PackagePath="\" Link="README.md" />
     <None Include="..\..\assets\icon.png" Pack="true" PackagePath="\" Link="icon.png" />
+    <None Include="..\..\assets\screen-ex.png" Pack="true" PackagePath="assets\" Link="assets/screen-ex.png" />
   </ItemGroup>
 
 </Project>

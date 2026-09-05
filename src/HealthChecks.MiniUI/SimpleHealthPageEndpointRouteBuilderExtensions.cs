@@ -34,18 +34,38 @@ public static class SimpleHealthPageEndpointRouteBuilderExtensions
             var healthCheckService = context.RequestServices.GetRequiredService<HealthCheckService>();
             var report = await healthCheckService.CheckHealthAsync(options.Predicate, context.RequestAborted);
 
-            var renderer = new SimpleHealthPageHtmlRenderer
-            {
-                Title = options.Title,
-                Report = report,
-                GeneratedAtUtc = DateTimeOffset.UtcNow
-            };
+            var generatedAtUtc = DateTimeOffset.UtcNow;
+            var usePlainText = options.EnablePlainText && !AcceptsHtml(context.Request);
 
-            var html = renderer.Render();
+            string body;
+            if (usePlainText)
+            {
+                body = new SimpleHealthPageTextRenderer
+                {
+                    Title = options.Title,
+                    Report = report,
+                    GeneratedAtUtc = generatedAtUtc
+                }.Render();
+            }
+            else
+            {
+                body = new SimpleHealthPageHtmlRenderer
+                {
+                    Title = options.Title,
+                    Report = report,
+                    GeneratedAtUtc = generatedAtUtc
+                }.Render();
+            }
 
             context.Response.StatusCode = ResolveStatusCode(report.Status, options.StatusCodes);
-            context.Response.ContentType = "text/html; charset=utf-8";
-            await context.Response.WriteAsync(html, context.RequestAborted);
+            context.Response.ContentType = usePlainText ? "text/plain; charset=utf-8" : "text/html; charset=utf-8";
+
+            if (options.EnablePlainText)
+            {
+                context.Response.Headers.Vary = "Accept";
+            }
+
+            await context.Response.WriteAsync(body, context.RequestAborted);
         });
 
         if (!string.IsNullOrWhiteSpace(options.AuthorizationPolicy))
@@ -54,6 +74,30 @@ public static class SimpleHealthPageEndpointRouteBuilderExtensions
         }
 
         return endpoint;
+    }
+
+    private static bool AcceptsHtml(HttpRequest request)
+    {
+        foreach (var accept in request.Headers.Accept)
+        {
+            if (accept is null)
+            {
+                continue;
+            }
+
+            foreach (var range in accept.Split(','))
+            {
+                var mediaType = range.Split(';')[0].Trim();
+
+                if (mediaType.Equals("text/html", StringComparison.OrdinalIgnoreCase) ||
+                    mediaType.Equals("application/xhtml+xml", StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     internal static int ResolveStatusCode(HealthStatus status, SimpleHealthPageStatusCodesOptions statusCodes)

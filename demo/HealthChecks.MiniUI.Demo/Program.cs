@@ -74,6 +74,8 @@ app.MapHealthChecks("/healthz");
 app.MapSimpleHealthPage("/health-ui", options =>
 {
     options.Title = "HealthChecks MiniUI Demo";
+    options.EnablePlainText = true;
+    options.StatusCodes.Unhealthy = StatusCodes.Status503ServiceUnavailable;
 });
 
 app.Run();

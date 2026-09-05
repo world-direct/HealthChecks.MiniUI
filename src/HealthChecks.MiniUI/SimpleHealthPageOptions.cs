@@ -24,6 +24,12 @@ public sealed class SimpleHealthPageOptions
     public string? AuthorizationPolicy { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether requests that do not accept <c>text/html</c>
+    /// (for example <c>curl</c>) receive a <c>text/plain</c> rendering instead of the HTML page.
+    /// </summary>
+    public bool EnablePlainText { get; set; }
+
+    /// <summary>
     /// Gets the HTTP status code mapping used for the page response based on overall health status.
     /// </summary>
     public SimpleHealthPageStatusCodesOptions StatusCodes { get; } = new();

@@ -70,6 +70,32 @@ app.MapSimpleHealthPage("/health-ui", options =>
 
 This is the same `Func<HealthCheckRegistration, bool>` shape as `HealthCheckOptions.Predicate` used by `MapHealthChecks`.
 
+## Plain text output
+
+Opt in with `EnablePlainText` to serve a `text/plain` rendering to clients that do not accept `text/html`, such as `curl` or a container health check. Browsers still get the HTML page.
+
+```csharp
+app.MapSimpleHealthPage("/health-ui", options =>
+{
+    options.EnablePlainText = true;
+});
+```
+
+```console
+$ curl http://localhost:5000/health-ui
+Health Checks
+Status:    Unhealthy
+Duration:  1002.67 ms
+Generated: 2026-09-05 09:12:33Z
+
+| NAME    | STATUS    |   DURATION |
+|---------|-----------|------------|
+| db      | Healthy   |     1.5 ms |
+| failing | Unhealthy | 1002.67 ms |
+```
+
+Combine it with `StatusCodes.Unhealthy` so `curl --fail` works without the Accept header routing shown below.
+
 ## Example for dynamic response
 
 If you want a single entry URL, you can dispatch based on the Accept header:

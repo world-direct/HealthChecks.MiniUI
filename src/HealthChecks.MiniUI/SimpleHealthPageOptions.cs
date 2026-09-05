@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+
 namespace HealthChecks.MiniUI;
 
 /// <summary>
@@ -5,6 +7,12 @@ namespace HealthChecks.MiniUI;
 /// </summary>
 public sealed class SimpleHealthPageOptions
 {
+    /// <summary>
+    /// Gets or sets a predicate selecting which health check registrations are executed, for example by tag.
+    /// When <see langword="null"/>, all registered health checks are executed.
+    /// </summary>
+    public Func<HealthCheckRegistration, bool>? Predicate { get; set; }
+
     /// <summary>
     /// Gets or sets the page title displayed at the top of the health page.
     /// </summary>

@@ -4,8 +4,8 @@ HealthChecks.MiniUI is a tiny ASP.NET Core health page helper that renders a hum
 
 ## What it does
 
-- Keeps your machine endpoint separate from the human UI
 - Renders health checks as a simple HTML page
+- Serves humans and scripts from one endpoint, HTML for browsers and plain text for `curl`
 - Shows status, description, duration, tags, and exception details
 - Uses the existing Microsoft health check pipeline
 
@@ -34,7 +34,7 @@ Map the page in your app startup code:
 app.MapHealthChecks("/healthz");
 
 // MiniUI HealthCheck page
-app.MapSimpleHealthPage("/health-ui", options =>
+app.MapSimpleHealthPage("/health", options =>
 {
     options.Title = "My App Health";
 });
@@ -49,7 +49,7 @@ You can override this per status:
 ```csharp
 using Microsoft.AspNetCore.Http;
 
-app.MapSimpleHealthPage("/health-ui", options =>
+app.MapSimpleHealthPage("/health", options =>
 {
     options.StatusCodes.Healthy = StatusCodes.Status200OK;
     options.StatusCodes.Degraded = StatusCodes.Status200OK;
@@ -62,7 +62,7 @@ app.MapSimpleHealthPage("/health-ui", options =>
 By default the page executes all registered health checks. Use `Predicate` to select a subset, for example by tag. Checks that are filtered out are not executed at all:
 
 ```csharp
-app.MapSimpleHealthPage("/health-ui", options =>
+app.MapSimpleHealthPage("/health", options =>
 {
     options.Predicate = registration => registration.Tags.Contains("ui");
 });
@@ -75,14 +75,14 @@ This is the same `Func<HealthCheckRegistration, bool>` shape as `HealthCheckOpti
 Opt in with `EnablePlainText` to serve a `text/plain` rendering to clients that do not accept `text/html`, such as `curl` or a container health check. Browsers still get the HTML page.
 
 ```csharp
-app.MapSimpleHealthPage("/health-ui", options =>
+app.MapSimpleHealthPage("/health", options =>
 {
     options.EnablePlainText = true;
 });
 ```
 
 ```console
-$ curl http://localhost:5000/health-ui
+$ curl http://localhost:5000/health
 Health Checks
 Status:    Unhealthy
 Duration:  1002.67 ms
@@ -110,8 +110,8 @@ dotnet run --project demo/HealthChecks.MiniUI.Demo/HealthChecks.MiniUI.Demo.cspr
 
 Then open:
 
-- `/health-ui` for the UI (HTML in a browser, plain text for `curl`)
-- `/healthz` for the machine endpoint
+- `/health` for the MiniUI page (HTML in a browser, plain text for `curl`, `503` when unhealthy)
+- `/healthz` for the plain `MapHealthChecks` response
 
 ## Notes
 

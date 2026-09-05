@@ -51,11 +51,11 @@ builder.Services
 
 var app = builder.Build();
 
-app.MapGet("/", () => Results.Redirect("/health-ui"));
+app.MapGet("/", () => Results.Redirect("/health"));
 
 app.MapHealthChecks("/healthz");
 
-app.MapSimpleHealthPage("/health-ui", options =>
+app.MapSimpleHealthPage("/health", options =>
 {
     options.Title = "HealthChecks MiniUI Demo";
     options.EnablePlainText = true;

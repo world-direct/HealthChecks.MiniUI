@@ -51,23 +51,7 @@ builder.Services
 
 var app = builder.Build();
 
-app.Use(async (context, next) =>
-{
-    if (context.Request.Path == "/health")
-    {
-        var accept = context.Request.Headers.Accept.ToString();
-        var wantsHtml = accept.Contains("text/html", StringComparison.OrdinalIgnoreCase);
-
-        // Internal server-side rewrite for this request (no 3xx redirect to the client).
-        context.Request.Path = wantsHtml ? "/health-ui" : "/healthz";
-    }
-
-    await next();
-});
-
-app.UseRouting();
-
-app.MapGet("/", () => Results.Redirect("/health"));
+app.MapGet("/", () => Results.Redirect("/health-ui"));
 
 app.MapHealthChecks("/healthz");
 

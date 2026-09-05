@@ -96,42 +96,7 @@ Generated: 2026-09-05 09:12:33Z
 
 Descriptions are shortened with `...` so the table stays readable in a terminal.
 
-Combine it with `StatusCodes.Unhealthy` so `curl --fail` works without the Accept header routing shown below.
-
-## Example for dynamic response
-
-If you want a single entry URL, you can dispatch based on the Accept header:
-Browsers typically include `text/html` on page navigation, so interactive users will see the UI automatically.
-
-- `/health` with `Accept: text/html` -> MiniUI endpoint (`/health-ui`)
-- `/health` with other Accept values -> machine endpoint (`/healthz`)
-
-```csharp
-// Custom Middleware for Accept header based routing
-app.Use(async (context, next) =>
-{
-    if (context.Request.Path == "/health")
-    {
-        var accept = context.Request.Headers.Accept.ToString();
-        var wantsHtml = accept.Contains("text/html", StringComparison.OrdinalIgnoreCase);
-
-        // Internal server-side rewrite for this request (no 3xx redirect to the client).
-        context.Request.Path = wantsHtml ? "/health-ui" : "/healthz";
-    }
-
-    await next();
-});
-
-// Required in this setup so endpoint routing sees the rewritten /health path.
-app.UseRouting();
-
-app.MapHealthChecks("/healthz");
-
-app.MapSimpleHealthPage("/health-ui", options =>
-{
-    options.Title = "My App Health";
-});
-```
+Combine it with `StatusCodes.Unhealthy` so `curl --fail` works.
 
 ## Demo app
 
@@ -145,9 +110,8 @@ dotnet run --project demo/HealthChecks.MiniUI.Demo/HealthChecks.MiniUI.Demo.cspr
 
 Then open:
 
-- `/health` as the dynamic entry URL (UI for browser requests, machine response for non-HTML Accept headers)
-- `/health-ui` for the UI endpoint directly
-- `/healthz` for the machine endpoint directly
+- `/health-ui` for the UI (HTML in a browser, plain text for `curl`)
+- `/healthz` for the machine endpoint
 
 ## Notes
 

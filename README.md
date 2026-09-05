@@ -88,11 +88,13 @@ Status:    Unhealthy
 Duration:  1002.67 ms
 Generated: 2026-09-05 09:12:33Z
 
-| NAME    | STATUS    |   DURATION |
-|---------|-----------|------------|
-| db      | Healthy   |     1.5 ms |
-| failing | Unhealthy | 1002.67 ms |
+| NAME    | STATUS    | DESCRIPTION          |   DURATION |
+|---------|-----------|----------------------|------------|
+| db      | Healthy   | connection ok        |     1.5 ms |
+| failing | Unhealthy | queue backlog too... | 1002.67 ms |
 ```
+
+Descriptions are shortened with `...` so the table stays readable in a terminal.
 
 Combine it with `StatusCodes.Unhealthy` so `curl --fail` works without the Accept header routing shown below.
 

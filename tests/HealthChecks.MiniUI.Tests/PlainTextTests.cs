@@ -118,9 +118,40 @@ public sealed class PlainTextTests
         Assert.Equal(lines[header].Length, lines[header + 1].Length);
         Assert.Equal(lines[header].Length, lines[header + 2].Length);
         Assert.Equal(lines[header].Length, lines[header + 3].Length);
-        Assert.Equal("|---------|-----------|------------|", lines[header + 1]);
-        Assert.Equal("| db      | Healthy   |     1.5 ms |", lines[header + 2]);
-        Assert.Equal("| failing | Unhealthy | 1002.67 ms |", lines[header + 3]);
+        Assert.Equal("|---------|-----------|-------------|------------|", lines[header + 1]);
+        Assert.Equal("| db      | Healthy   | ok          |     1.5 ms |", lines[header + 2]);
+        Assert.Equal("| failing | Unhealthy | bad         | 1002.67 ms |", lines[header + 3]);
+    }
+
+    [Fact]
+    public void TextRenderer_TruncatesLongDescriptions()
+    {
+        var report = new HealthReport(
+            new Dictionary<string, HealthReportEntry>
+            {
+                ["db"] = new HealthReportEntry(
+                    HealthStatus.Unhealthy,
+                    new string('x', 100),
+                    TimeSpan.Zero,
+                    null,
+                    null),
+                ["multiline"] = new HealthReportEntry(
+                    HealthStatus.Healthy,
+                    "first line\nsecond line",
+                    TimeSpan.Zero,
+                    null,
+                    null)
+            },
+            TimeSpan.Zero);
+
+        var lines = new SimpleHealthPageTextRenderer { Report = report }.Render().Split('\n');
+
+        var truncated = Array.Find(lines, l => l.StartsWith("| db ", StringComparison.Ordinal))!;
+        Assert.Contains(new string('x', 37) + "...", truncated, StringComparison.Ordinal);
+        Assert.DoesNotContain(new string('x', 41), truncated, StringComparison.Ordinal);
+
+        var multiline = Array.Find(lines, l => l.StartsWith("| multiline ", StringComparison.Ordinal))!;
+        Assert.Contains("first line second line", multiline, StringComparison.Ordinal);
     }
 
     [Fact]

@@ -6,7 +6,10 @@ namespace HealthChecks.MiniUI;
 
 internal sealed class SimpleHealthPageTextRenderer
 {
-    private static readonly string[] Headers = ["NAME", "STATUS", "DURATION"];
+    private static readonly string[] Headers = ["NAME", "STATUS", "DESCRIPTION", "DURATION"];
+
+    // Keeps the whole table within a classic 80 column terminal for typical check names.
+    private const int MaxDescriptionWidth = 40;
 
     public string Title { get; set; } = "Health Checks";
 
@@ -32,7 +35,13 @@ internal sealed class SimpleHealthPageTextRenderer
 
         var rows = report.Entries
             .OrderBy(x => x.Key, StringComparer.OrdinalIgnoreCase)
-            .Select(x => new[] { x.Key, x.Value.Status.ToString(), FormatDuration(x.Value.Duration) })
+            .Select(x => new[]
+            {
+                x.Key,
+                x.Value.Status.ToString(),
+                FormatDescription(x.Value.Description),
+                FormatDuration(x.Value.Duration)
+            })
             .ToList();
 
         var widths = Headers
@@ -73,4 +82,18 @@ internal sealed class SimpleHealthPageTextRenderer
 
     private static string FormatDuration(TimeSpan duration) =>
         duration.TotalMilliseconds.ToString("0.##", CultureInfo.InvariantCulture) + " ms";
+
+    private static string FormatDescription(string? description)
+    {
+        if (string.IsNullOrWhiteSpace(description))
+        {
+            return string.Empty;
+        }
+
+        var singleLine = string.Join(' ', description.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
+
+        return singleLine.Length <= MaxDescriptionWidth
+            ? singleLine
+            : string.Concat(singleLine.AsSpan(0, MaxDescriptionWidth - 3), "...");
+    }
 }

@@ -57,6 +57,19 @@ app.MapSimpleHealthPage("/health-ui", options =>
 });
 ```
 
+## Filtering which checks are executed
+
+By default the page executes all registered health checks. Use `Predicate` to select a subset, for example by tag. Checks that are filtered out are not executed at all:
+
+```csharp
+app.MapSimpleHealthPage("/health-ui", options =>
+{
+    options.Predicate = registration => registration.Tags.Contains("ui");
+});
+```
+
+This is the same `Func<HealthCheckRegistration, bool>` shape as `HealthCheckOptions.Predicate` used by `MapHealthChecks`.
+
 ## Example for dynamic response
 
 If you want a single entry URL, you can dispatch based on the Accept header:

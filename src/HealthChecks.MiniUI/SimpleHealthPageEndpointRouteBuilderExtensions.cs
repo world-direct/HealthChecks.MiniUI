@@ -32,7 +32,7 @@ public static class SimpleHealthPageEndpointRouteBuilderExtensions
         var endpoint = endpoints.MapGet(pattern, async context =>
         {
             var healthCheckService = context.RequestServices.GetRequiredService<HealthCheckService>();
-            var report = await healthCheckService.CheckHealthAsync(context.RequestAborted);
+            var report = await healthCheckService.CheckHealthAsync(options.Predicate, context.RequestAborted);
 
             var renderer = new SimpleHealthPageHtmlRenderer
             {

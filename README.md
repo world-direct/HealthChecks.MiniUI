@@ -70,40 +70,33 @@ app.MapSimpleHealthPage("/health-ui", options =>
 
 This is the same `Func<HealthCheckRegistration, bool>` shape as `HealthCheckOptions.Predicate` used by `MapHealthChecks`.
 
-## Example for dynamic response
+## Plain text output
 
-If you want a single entry URL, you can dispatch based on the Accept header:
-Browsers typically include `text/html` on page navigation, so interactive users will see the UI automatically.
-
-- `/health` with `Accept: text/html` -> MiniUI endpoint (`/health-ui`)
-- `/health` with other Accept values -> machine endpoint (`/healthz`)
+Opt in with `EnablePlainText` to serve a `text/plain` rendering to clients that do not accept `text/html`, such as `curl` or a container health check. Browsers still get the HTML page.
 
 ```csharp
-// Custom Middleware for Accept header based routing
-app.Use(async (context, next) =>
-{
-    if (context.Request.Path == "/health")
-    {
-        var accept = context.Request.Headers.Accept.ToString();
-        var wantsHtml = accept.Contains("text/html", StringComparison.OrdinalIgnoreCase);
-
-        // Internal server-side rewrite for this request (no 3xx redirect to the client).
-        context.Request.Path = wantsHtml ? "/health-ui" : "/healthz";
-    }
-
-    await next();
-});
-
-// Required in this setup so endpoint routing sees the rewritten /health path.
-app.UseRouting();
-
-app.MapHealthChecks("/healthz");
-
 app.MapSimpleHealthPage("/health-ui", options =>
 {
-    options.Title = "My App Health";
+    options.EnablePlainText = true;
 });
 ```
+
+```console
+$ curl http://localhost:5000/health-ui
+Health Checks
+Status:    Unhealthy
+Duration:  1002.67 ms
+Generated: 2026-09-05 09:12:33Z
+
+| NAME    | STATUS    | DESCRIPTION          |   DURATION |
+|---------|-----------|----------------------|------------|
+| db      | Healthy   | connection ok        |     1.5 ms |
+| failing | Unhealthy | queue backlog too... | 1002.67 ms |
+```
+
+Descriptions are shortened with `...` so the table stays readable in a terminal.
+
+Combine it with `StatusCodes.Unhealthy` so `curl --fail` works.
 
 ## Demo app
 
@@ -117,9 +110,8 @@ dotnet run --project demo/HealthChecks.MiniUI.Demo/HealthChecks.MiniUI.Demo.cspr
 
 Then open:
 
-- `/health` as the dynamic entry URL (UI for browser requests, machine response for non-HTML Accept headers)
-- `/health-ui` for the UI endpoint directly
-- `/healthz` for the machine endpoint directly
+- `/health-ui` for the UI (HTML in a browser, plain text for `curl`)
+- `/healthz` for the machine endpoint
 
 ## Notes
 
